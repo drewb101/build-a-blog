@@ -1,21 +1,14 @@
 {% extends "base.html" %} {% block content %}
-<h1>Build A Blog</h1>
-<form method='POST'>
-    <label>
-        New Task:
-        <input type="text" name='task' />
-    </label>
-    <input type="submit" value='Add Task' />
-</form>
-
-<hr /> {% if tasks|length == 0 %}
-<p>No tasks yet</p>
-{% else %}
-
+<h1>All Blog Entries</h1>
 <ul>
-    {% for task in tasks %}
-    <li>{{task}}</li>
+    {% for entry in all_entries %}
+    <li>
+        <h2>
+            <a href="/blog?id={{ entry.id }}">{{ entry.title }}</a>
+        </h2>
+        <p>{{ entry.body }}</p>
+        <p>{{ entry.created }}</p>
+    </li>
     {% endfor %}
 </ul>
-
-{% endif %} {% endblock %}
+{% endblock %}
