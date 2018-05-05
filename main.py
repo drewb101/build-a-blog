@@ -1,5 +1,6 @@
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, flash
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -10,34 +11,71 @@ app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
 
-class Task(db.Model):
+class Blog(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120))
+    title = db.Column(db.String(180))
+    body = db.Column(db.String(1000))
+    created = db.Column(db.DateTime)
 
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, title, body):
+        self.title = title
+        self.body = body
+        self.created = datetime.cstnow()
+
+    def is_valid(self):
+        if self.title and self.body and self.created:
+            return True
+        else:
+            return False
 
 
-@app.route('/blog', methods=['POST', 'GET'])
+@app.route("/")
 def index():
+    return redirect("/blog")
 
+
+@app.route("/blog")
+def display_blog_blogs():
+
+    blog_id = request.args.get('id')
+    if (blog_id):
+        blog = Blog.query.get(blog_id)
+        return render_template('single_blog.html', title="Blog Blog",
+                               blog=blog)
+
+    sort = request.args.get('sort')
+    if (sort == "newest"):
+        all_blogs = Blog.query.order_by(Blog.created.desc()).all()
+    else:
+        all_blogs = Blog.query.all()
+    return render_template('all_blogs.html', title="All Blog Posts",
+                           all_blogs=all_blogs)
+
+
+@app.route('/newpost', methods=['GET', 'POST'])
+def new_blog():
     if request.method == 'POST':
-        task = request.form['task']
-        tasks.append(task)
+        new_blog_title = request.form['title']
+        new_blog_body = request.form['body']
+        new_blog = Blog(new_blog_title, new_blog_body)
 
-    return render_template('blog.html', title="Build A Blog!", tasks=tasks)
+        if new_blog.is_valid():
+            db.session.add(new_blog)
+            db.session.commit()
 
+            url = "/blog?id=" + str(new_blog.id)
+            return redirect(url)
+        else:
+            flash("""Please check your blog for errors. Both a title
+            and a body are required.""")
+            return render_template('new_blog_form.html',
+                                   title="Add a Blog Entry",
+                                   new_blog_title=new_blog_title,
+                                   new_blog_body=new_blog_body)
 
-@app.route('/newpost', methods=['POST', 'GET'])
-def new_post():
-
-    if request.method == 'POST':
-        task = request.form['task']
-        tasks.append(task)
-
-    return render_template('newpost.html', title="Add a Blog Entry!",
-                           tasks=tasks)
+    else:
+        return render_template('new_blog_form.html', title="Create new blog blog")
 
 
 if __name__ == '__main__':
