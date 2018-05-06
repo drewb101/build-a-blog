@@ -9,7 +9,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
     'mysql+pymysql://build-a-blog:build-a-blog@localhost:8889/build-a-blog')
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
-app.secret_key = 'f8wv3w2f>v9j4sEuhcNYydAGMzzZJgkGgyHE9gUqaJcCk^f*^o7fQyBT%XtTvcYM'
+app.secret_key = 'superAwesomeSecretKey'
 
 
 class Blog(db.Model):
