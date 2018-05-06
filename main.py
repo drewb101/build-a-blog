@@ -9,6 +9,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
     'mysql+pymysql://build-a-blog:build-a-blog@localhost:8889/build-a-blog')
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
+app.secret_key = 'f8wv3w2f>v9j4sEuhcNYydAGMzzZJgkGgyHE9gUqaJcCk^f*^o7fQyBT%XtTvcYM'
 
 
 class Blog(db.Model):
@@ -21,7 +22,7 @@ class Blog(db.Model):
     def __init__(self, title, body):
         self.title = title
         self.body = body
-        self.created = datetime.cstnow()
+        self.created = datetime.now()
 
     def is_valid(self):
         if self.title and self.body and self.created:
